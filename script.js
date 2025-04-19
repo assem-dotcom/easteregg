@@ -193,12 +193,20 @@ function initializeScene() {
         
         easterScene = new EasterScene(container);
         
-        // Add click event listener to the container
-        container.addEventListener('click', () => {
+        // Add both click and touch event listeners to the container
+        const startQuizOnInteraction = (event) => {
+            event.preventDefault(); // Prevent default touch behavior
             if (!quizStarted) {
                 startQuiz();
             }
-        });
+        };
+
+        // Add mouse click event
+        container.addEventListener('click', startQuizOnInteraction);
+        
+        // Add touch events
+        container.addEventListener('touchstart', startQuizOnInteraction, { passive: false });
+        container.addEventListener('touchend', startQuizOnInteraction, { passive: false });
         
         // Handle window resize
         window.addEventListener('resize', () => {

@@ -96,6 +96,8 @@ body {
     z-index: 1000;
     cursor: pointer;
     transition: transform 0.3s ease;
+    touch-action: manipulation; /* Optimize for touch */
+    -webkit-tap-highlight-color: transparent; /* Remove tap highlight on iOS */
 }
 
 #three-container:hover {
@@ -109,6 +111,7 @@ body {
     position: absolute;
     top: 0;
     left: 0;
+    touch-action: manipulation;
 }
 
 .easter-egg {
@@ -641,5 +644,20 @@ body {
     .button {
         font-size: 1rem;
         padding: 0.8rem 1.6rem;
+    }
+}
+
+/* Add specific mobile styles */
+@media (max-width: 768px) {
+    #three-container {
+        touch-action: manipulation;
+        user-select: none;
+        -webkit-user-select: none;
+    }
+    
+    .quiz-container {
+        width: 90%;
+        margin: 0 auto;
+        padding: 1rem;
     }
 } 

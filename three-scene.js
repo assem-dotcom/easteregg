@@ -58,6 +58,13 @@ class EasterScene {
             this.controls.enableZoom = false;
             this.controls.minDistance = 5;
             this.controls.maxDistance = 5;
+            this.controls.enablePan = false;
+            this.controls.rotateSpeed = 0.5;
+            this.controls.enableTouch = true;
+            this.controls.touches = {
+                ONE: THREE.TOUCH.ROTATE,
+                TWO: THREE.TOUCH.NONE
+            };
             
             // Initialize growth state
             this.currentGrowth = 1;

@@ -260,7 +260,10 @@ function showQuestion() {
     // Reset egg expression but maintain size
     easterEgg.classList.remove('happy', 'sad', 'correct', 'cracking');
     
+    // Clear out all previous options completely
     optionsElement.innerHTML = '';
+    
+    // Create new options with no color styling
     question.options.forEach((option, index) => {
         const button = document.createElement('button');
         button.className = 'option';

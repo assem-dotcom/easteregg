@@ -8,6 +8,25 @@
     <link href="https://fonts.googleapis.com/css2?family=Comic+Sans+MS&display=swap" rel="stylesheet">
 </head>
 <body>
+    <audio id="backgroundMusic" preload="auto" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="clickSound" preload="auto">
+        <source src="https://assets.mixkit.co/active_storage/sfx/2574/2574-preview.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="correctSound" preload="auto">
+        <source src="https://assets.mixkit.co/active_storage/sfx/2570/2570-preview.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="wrongSound" preload="auto">
+        <source src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="completeSound" preload="auto">
+        <source src="https://assets.mixkit.co/active_storage/sfx/2572/2572-preview.mp3" type="audio/mpeg">
+    </audio>
+    
+    <!-- Music status indicator -->
+    <div id="musicStatus" class="music-status">🔇</div>
+
     <div class="container">
         <!-- Start screen -->
         <div id="start-screen" class="start-screen">
@@ -63,5 +82,58 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="three-scene.js"></script>
     <script src="script.js"></script>
+    <script>
+        // Wait for the page to be fully loaded
+        window.addEventListener('load', function() {
+            const bgMusic = document.getElementById('backgroundMusic');
+            const musicStatus = document.getElementById('musicStatus');
+            let musicPlaying = false;
+            
+            // Set very low volume
+            bgMusic.volume = 0.03;
+            
+            function playMusic() {
+                if (!musicPlaying) {
+                    // Try to play the music
+                    const playPromise = bgMusic.play();
+                    
+                    if (playPromise !== undefined) {
+                        playPromise.then(() => {
+                            // Music started playing successfully
+                            musicPlaying = true;
+                            musicStatus.textContent = '🎵';
+                            console.log('Music playing');
+                        }).catch(error => {
+                            // Auto-play was prevented
+                            console.log('Auto-play prevented:', error);
+                            musicStatus.textContent = '🔇';
+                        });
+                    }
+                }
+            }
+            
+            // Try to play music on first click
+            document.body.addEventListener('click', function bodyClick() {
+                playMusic();
+                document.body.removeEventListener('click', bodyClick);
+            });
+            
+            // Also try to play on page load
+            playMusic();
+            
+            // Toggle music on status indicator click
+            musicStatus.addEventListener('click', function() {
+                if (musicPlaying) {
+                    bgMusic.pause();
+                    musicPlaying = false;
+                    musicStatus.textContent = '🔇';
+                } else {
+                    bgMusic.play();
+                    musicPlaying = true;
+                    musicStatus.textContent = '🎵';
+                }
+            });
+        });
+    </script>
 </body>
 </html> 

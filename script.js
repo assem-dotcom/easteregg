@@ -191,8 +191,35 @@ function initializeScene() {
     }
 }
 
+// Add sound effect functions
+function playSound(soundId) {
+    const sound = document.getElementById(soundId);
+    sound.currentTime = 0; // Reset sound to start
+    
+    // Set different volume levels for different sounds
+    switch(soundId) {
+        case 'clickSound':
+            sound.volume = 0.1; // Very quiet for clicks
+            break;
+        case 'correctSound':
+            sound.volume = 0.3; // Moderate volume for correct answers
+            break;
+        case 'wrongSound':
+            sound.volume = 0.2; // Slightly quieter for wrong answers
+            break;
+        case 'completeSound':
+            sound.volume = 0.4; // Slightly louder for completion
+            break;
+        default:
+            sound.volume = 0.3; // Default volume
+    }
+    
+    sound.play().catch(error => console.log("Sound play failed:", error));
+}
+
 // Add new function to start the quiz
 function startQuiz() {
+    playSound('clickSound'); // Play click sound when starting quiz
     document.getElementById('start-screen').classList.add('hidden');
     document.getElementById('quiz-container').classList.remove('hidden');
     showQuestion();
@@ -244,6 +271,8 @@ function showQuestion() {
 }
 
 function selectAnswer(index, event) {
+    playSound('clickSound'); // Play click sound when selecting an answer
+    
     const question = questions[currentQuestion];
     const options = document.querySelectorAll('.option');
     
@@ -251,44 +280,32 @@ function selectAnswer(index, event) {
         option.disabled = true;
     });
     
-    const isCorrect = index === question.correct;
-    updateEggExpression(isCorrect);
-    
-    if (isCorrect) {
-        options[index].style.backgroundColor = '#98FB98'; // Light green
+    if (index === question.correct) {
+        playSound('correctSound'); // Play correct answer sound
+        event.target.classList.add('correct');
         score++;
-        
-        // Trigger emoji burst from the clicked button's position
-        const rect = event.target.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        burstEmojis(question.emojis, centerX, centerY);
+        correctAnswers++;
+        updateEggExpression(true);
+        burstEmojis(question.emojis, event.clientX, event.clientY);
     } else {
-        options[index].style.backgroundColor = '#FFB6C1'; // Light pink for wrong answer
-        options[question.correct].style.backgroundColor = '#98FB98'; // Light green for correct answer
+        playSound('wrongSound'); // Play wrong answer sound
+        event.target.classList.add('wrong');
+        options[question.correct].classList.add('correct');
+        updateEggExpression(false);
     }
     
-    // Show fun fact with fade in
     funFactElement.textContent = question.funFact;
-    funFactElement.classList.remove('hidden', 'fade-out');
-    funFactElement.classList.add('fade-in');
+    funFactElement.classList.remove('hidden');
     
-    // Move to next question after 5 seconds
     setTimeout(() => {
-        // Fade out fun fact
-        funFactElement.classList.remove('fade-in');
-        funFactElement.classList.add('fade-out');
-        
-        // Wait for fade out animation to complete
-        setTimeout(() => {
-            currentQuestion++;
-            if (currentQuestion < questions.length) {
-                showQuestion();
-            } else {
-                showResult();
-            }
-        }, 800); // Match the fade-out animation duration
-    }, 5000); // Increased to 5 seconds for better readability
+        currentQuestion++;
+        if (currentQuestion < questions.length) {
+            showQuestion();
+        } else {
+            playSound('completeSound'); // Play completion sound
+            showResult();
+        }
+    }, 2000);
 }
 
 function showResult() {
@@ -385,16 +402,12 @@ function showResult() {
 
 // Modify restart button to show start screen
 restartButton.addEventListener('click', () => {
+    playSound('clickSound'); // Play click sound when restarting
     currentQuestion = 0;
     score = 0;
-    correctAnswers = 0;  // Reset correct answers counter
-    resultElement.classList.add('hidden');
-    document.getElementById('start-screen').classList.remove('hidden');
-    document.getElementById('start-screen').style.animation = 'fadeIn 0.5s ease-in forwards';
-    // Remove all size classes when restarting
-    for (let i = 1; i <= 5; i++) {
-        easterEgg.classList.remove(`size-${i}`);
-    }
+    correctAnswers = 0;
+    document.getElementById('result').classList.add('hidden');
+    showQuestion();
 });
 
 function startHatching() {

@@ -29,7 +29,7 @@ class EasterScene {
             container.appendChild(this.renderer.domElement);
             
             // Add lights
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
             this.scene.add(ambientLight);
             
             const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
@@ -60,8 +60,15 @@ class EasterScene {
             
             // Initialize growth state
             this.currentGrowth = 1;
-            this.maxGrowth = 3.0; // Reduced max growth for better readability
+            this.maxGrowth = 3.0;
             this.growthStep = (this.maxGrowth - 1) / 5;
+            
+            // Add gentle floating animation
+            this.floatAnimation = {
+                time: 0,
+                speed: 0.002,
+                amplitude: 0.1
+            };
             
             // Start animation
             this.animate();
@@ -154,24 +161,16 @@ class EasterScene {
     }
     
     animate() {
-        try {
-            requestAnimationFrame(() => this.animate());
-            
-            // Rotate egg
-            if (this.egg) {
-                this.egg.rotation.y += 0.005;
-            }
-            
-            // Rotate bunny if visible
-            if (this.bunny && this.bunny.visible) {
-                this.bunny.rotation.y += 0.01;
-            }
-            
-            this.controls.update();
-            this.renderer.render(this.scene, this.camera);
-        } catch (error) {
-            console.error('Error in animation loop:', error);
+        requestAnimationFrame(() => this.animate());
+        
+        // Add gentle floating motion
+        if (this.egg) {
+            this.floatAnimation.time += this.floatAnimation.speed;
+            this.egg.position.y = Math.sin(this.floatAnimation.time) * this.floatAnimation.amplitude;
+            this.egg.rotation.y += 0.005;
         }
+        
+        this.renderer.render(this.scene, this.camera);
     }
     
     celebrate() {

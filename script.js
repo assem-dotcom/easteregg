@@ -180,15 +180,22 @@ function initializeScene() {
         
         // Add event listener for both click and touch
         function handleInteraction(event) {
+            console.log('Interaction detected:', event.type);
             event.preventDefault();
             if (!quizStarted) {
+                console.log('Starting quiz...');
                 startQuiz();
             }
         }
 
-        // Add event listeners
-        container.addEventListener('click', handleInteraction);
-        container.addEventListener('touchend', handleInteraction);
+        // Add event listeners with proper touch support
+        container.addEventListener('click', handleInteraction, { passive: false });
+        container.addEventListener('touchstart', handleInteraction, { passive: false });
+        container.addEventListener('touchend', handleInteraction, { passive: false });
+        
+        // Make sure the container is interactive
+        container.style.pointerEvents = 'auto';
+        container.style.touchAction = 'none';
         
         // Handle window resize
         window.addEventListener('resize', () => {

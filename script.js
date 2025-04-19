@@ -286,6 +286,8 @@ function selectAnswer(index, event) {
     if (index === question.correct) {
         playSound('correctSound'); // Play correct answer sound
         event.target.classList.add('correct');
+        event.target.style.backgroundColor = '#98FB98'; // Fallback green color
+        event.target.style.borderColor = '#4CAF50'; // Fallback border color
         score++;
         correctAnswers++;
         updateEggExpression(true);
@@ -293,7 +295,11 @@ function selectAnswer(index, event) {
     } else {
         playSound('wrongSound'); // Play wrong answer sound
         event.target.classList.add('wrong');
+        event.target.style.backgroundColor = '#FFB6C1'; // Fallback pink color
+        event.target.style.borderColor = '#FF6B6B'; // Fallback border color
         options[question.correct].classList.add('correct');
+        options[question.correct].style.backgroundColor = '#98FB98'; // Fallback green color
+        options[question.correct].style.borderColor = '#4CAF50'; // Fallback border color
         updateEggExpression(false);
     }
     

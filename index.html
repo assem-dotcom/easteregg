@@ -9,6 +9,7 @@
 </head>
 <body>
     <audio id="backgroundMusic" preload="auto" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" type="audio/mpeg">
         <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3" type="audio/mpeg">
     </audio>
     <audio id="clickSound" preload="auto">
@@ -107,6 +108,8 @@
                             // Auto-play was prevented
                             console.log('Auto-play prevented:', error);
                             musicStatus.textContent = '🔇';
+                            // Show a tooltip to inform the user
+                            musicStatus.title = 'Click to enable music';
                         });
                     }
                 }
@@ -127,10 +130,19 @@
                     bgMusic.pause();
                     musicPlaying = false;
                     musicStatus.textContent = '🔇';
+                    musicStatus.title = 'Click to play music';
                 } else {
-                    bgMusic.play();
-                    musicPlaying = true;
-                    musicStatus.textContent = '🎵';
+                    const playPromise = bgMusic.play();
+                    if (playPromise !== undefined) {
+                        playPromise.then(() => {
+                            musicPlaying = true;
+                            musicStatus.textContent = '🎵';
+                            musicStatus.title = 'Click to mute';
+                        }).catch(error => {
+                            console.log('Failed to play music:', error);
+                            musicStatus.title = 'Failed to play music';
+                        });
+                    }
                 }
             });
         });

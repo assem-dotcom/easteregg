@@ -869,4 +869,101 @@ body {
         border-color: #FF6B6B !important;
         color: #333 !important;
     }
+
+    /* Improve music control visibility on mobile */
+    .music-status {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 10px;
+        border-radius: 50%;
+        font-size: 1.5rem;
+        z-index: 1000;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Improve quiz container spacing on mobile */
+    .quiz-container {
+        padding: 0.5rem;
+    }
+
+    .question {
+        font-size: 1.1rem;
+        line-height: 1.4;
+    }
+
+    .option {
+        padding: 0.8rem;
+        font-size: 0.9rem;
+    }
+
+    /* Improve start screen on mobile */
+    .start-screen {
+        padding: 1rem;
+    }
+
+    .title {
+        font-size: 2rem;
+    }
+
+    .quiz-description {
+        font-size: 1rem;
+        padding: 0.8rem;
+    }
+
+    .start-button {
+        font-size: 1.1rem;
+        padding: 0.8rem 1.6rem;
+    }
+}
+
+/* Add smooth transitions for all interactive elements */
+.option, .button, .music-status {
+    transition: all 0.3s ease;
+}
+
+/* Improve accessibility */
+.option:focus, .button:focus, .music-status:focus {
+    outline: 2px solid #FF69B4;
+    outline-offset: 2px;
+}
+
+/* Add loading state for buttons */
+.button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Improve error state visibility */
+.option.wrong {
+    animation: shake 0.5s ease;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* Add success state animation */
+.option.correct {
+    animation: pulse 0.5s ease;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* Add success state animation */
+.option.correct {
+    animation: pulse 0.5s ease;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
 } 

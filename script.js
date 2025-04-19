@@ -193,28 +193,42 @@ function initializeScene() {
 
 // Add sound effect functions
 function playSound(soundId) {
-    const sound = document.getElementById(soundId);
-    sound.currentTime = 0; // Reset sound to start
-    
-    // Set different volume levels for different sounds
-    switch(soundId) {
-        case 'clickSound':
-            sound.volume = 0.1; // Very quiet for clicks
-            break;
-        case 'correctSound':
-            sound.volume = 0.3; // Moderate volume for correct answers
-            break;
-        case 'wrongSound':
-            sound.volume = 0.2; // Slightly quieter for wrong answers
-            break;
-        case 'completeSound':
-            sound.volume = 0.4; // Slightly louder for completion
-            break;
-        default:
-            sound.volume = 0.3; // Default volume
+    try {
+        const sound = document.getElementById(soundId);
+        if (!sound) {
+            console.warn(`Sound element ${soundId} not found`);
+            return;
+        }
+        
+        sound.currentTime = 0; // Reset sound to start
+        
+        // Set different volume levels for different sounds
+        switch(soundId) {
+            case 'clickSound':
+                sound.volume = 0.1; // Very quiet for clicks
+                break;
+            case 'correctSound':
+                sound.volume = 0.3; // Moderate volume for correct answers
+                break;
+            case 'wrongSound':
+                sound.volume = 0.2; // Slightly quieter for wrong answers
+                break;
+            case 'completeSound':
+                sound.volume = 0.4; // Slightly louder for completion
+                break;
+            default:
+                sound.volume = 0.3; // Default volume
+        }
+        
+        const playPromise = sound.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(error => {
+                console.warn(`Failed to play sound ${soundId}:`, error);
+            });
+        }
+    } catch (error) {
+        console.error('Error playing sound:', error);
     }
-    
-    sound.play().catch(error => console.log("Sound play failed:", error));
 }
 
 // Add new function to start the quiz
@@ -274,47 +288,67 @@ function showQuestion() {
 }
 
 function selectAnswer(index, event) {
-    playSound('clickSound'); // Play click sound when selecting an answer
-    
-    const question = questions[currentQuestion];
-    const options = document.querySelectorAll('.option');
-    
-    options.forEach(option => {
-        option.disabled = true;
-    });
-    
-    if (index === question.correct) {
-        playSound('correctSound'); // Play correct answer sound
-        event.target.classList.add('correct');
-        event.target.style.backgroundColor = '#98FB98'; // Fallback green color
-        event.target.style.borderColor = '#4CAF50'; // Fallback border color
-        score++;
-        correctAnswers++;
-        updateEggExpression(true);
-        burstEmojis(question.emojis, event.clientX, event.clientY);
-    } else {
-        playSound('wrongSound'); // Play wrong answer sound
-        event.target.classList.add('wrong');
-        event.target.style.backgroundColor = '#FFB6C1'; // Fallback pink color
-        event.target.style.borderColor = '#FF6B6B'; // Fallback border color
-        options[question.correct].classList.add('correct');
-        options[question.correct].style.backgroundColor = '#98FB98'; // Fallback green color
-        options[question.correct].style.borderColor = '#4CAF50'; // Fallback border color
-        updateEggExpression(false);
-    }
-    
-    funFactElement.textContent = question.funFact;
-    funFactElement.classList.remove('hidden');
-    
-    setTimeout(() => {
-        currentQuestion++;
-        if (currentQuestion < questions.length) {
-            showQuestion();
+    try {
+        playSound('clickSound'); // Play click sound when selecting an answer
+        
+        const question = questions[currentQuestion];
+        const options = document.querySelectorAll('.option');
+        
+        // Disable all options to prevent multiple selections
+        options.forEach(option => {
+            option.disabled = true;
+            option.style.cursor = 'not-allowed';
+        });
+        
+        if (index === question.correct) {
+            playSound('correctSound'); // Play correct answer sound
+            event.target.classList.add('correct');
+            event.target.style.backgroundColor = '#98FB98'; // Fallback green color
+            event.target.style.borderColor = '#4CAF50'; // Fallback border color
+            score++;
+            correctAnswers++;
+            updateEggExpression(true);
+            burstEmojis(question.emojis, event.clientX, event.clientY);
         } else {
-            playSound('completeSound'); // Play completion sound
-            showResult();
+            playSound('wrongSound'); // Play wrong answer sound
+            event.target.classList.add('wrong');
+            event.target.style.backgroundColor = '#FFB6C1'; // Fallback pink color
+            event.target.style.borderColor = '#FF6B6B'; // Fallback border color
+            options[question.correct].classList.add('correct');
+            options[question.correct].style.backgroundColor = '#98FB98'; // Fallback green color
+            options[question.correct].style.borderColor = '#4CAF50'; // Fallback border color
+            updateEggExpression(false);
         }
-    }, 5000);
+        
+        // Show fun fact with a smooth transition
+        funFactElement.textContent = question.funFact;
+        funFactElement.classList.remove('hidden');
+        funFactElement.style.opacity = '0';
+        setTimeout(() => {
+            funFactElement.style.opacity = '1';
+        }, 100);
+        
+        // Move to next question after a delay
+        setTimeout(() => {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                showQuestion();
+            } else {
+                playSound('completeSound'); // Play completion sound
+                showResult();
+            }
+        }, 5000);
+    } catch (error) {
+        console.error('Error in selectAnswer:', error);
+        // Show error message to user
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'error-message';
+        errorMessage.textContent = 'An error occurred. Please try again.';
+        document.getElementById('quiz-container').appendChild(errorMessage);
+        setTimeout(() => {
+            errorMessage.remove();
+        }, 3000);
+    }
 }
 
 function showResult() {

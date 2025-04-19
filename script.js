@@ -65,6 +65,7 @@ let currentQuestion = 0;
 let score = 0;
 let correctAnswers = 0;  // Track number of correct answers for egg growth
 let easterScene;
+let quizStarted = false;
 
 const questionElement = document.getElementById('question');
 const optionsElement = document.getElementById('options');
@@ -75,6 +76,8 @@ const finalMessageElement = document.getElementById('final-message');
 const restartButton = document.getElementById('restart');
 const funFactElement = document.getElementById('fun-fact');
 const easterEgg = document.querySelector('.easter-egg');
+const container = document.querySelector('.container');
+const quizContainer = document.getElementById('quiz-container');
 
 function createEmojiBurst(emoji, x, y) {
     const emojiElement = document.createElement('div');
@@ -165,6 +168,21 @@ function crackEggRevealBunny() {
     }, 2000);
 }
 
+function startQuiz() {
+    if (quizStarted) return;
+    quizStarted = true;
+    
+    // Show quiz container with fade effect
+    quizContainer.classList.remove('hidden');
+    quizContainer.classList.add('active');
+    
+    // Start the quiz
+    currentQuestion = 0;
+    score = 0;
+    correctAnswers = 0;
+    showQuestion();
+}
+
 function initializeScene() {
     try {
         const container = document.getElementById('three-container');
@@ -174,6 +192,13 @@ function initializeScene() {
         }
         
         easterScene = new EasterScene(container);
+        
+        // Add click event listener to the container
+        container.addEventListener('click', () => {
+            if (!quizStarted) {
+                startQuiz();
+            }
+        });
         
         // Handle window resize
         window.addEventListener('resize', () => {
@@ -191,8 +216,8 @@ function initializeScene() {
 // Make sure DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     initializeScene();
-    startHatching();
-    showQuestion();
+    // Hide quiz container initially but show the container itself
+    quizContainer.classList.add('hidden');
 });
 
 function showQuestion() {

@@ -25,6 +25,16 @@ body {
     align-items: center;
 }
 
+.container.quiz-active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.container.quiz-inactive {
+    opacity: 0;
+    pointer-events: none;
+}
+
 @keyframes glow {
     from {
         box-shadow: 0 0 10px #FFB6C1, 0 0 20px #FFC0CB;
@@ -61,14 +71,35 @@ body {
     z-index: 1; /* Ensure it's above other elements */
 }
 
+.quiz-container {
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s ease;
+    pointer-events: none;
+}
+
+.quiz-container.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+}
+
 #three-container {
-    position: fixed; /* Change to fixed positioning */
+    position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
     background-color: transparent;
-    z-index: 1000; /* High z-index to appear above everything */
+    z-index: 1000;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+#three-container:hover {
+    transform: scale(1.05);
 }
 
 #three-container canvas {
@@ -229,11 +260,6 @@ body {
 
 .easter-egg.sad {
     animation: sad-shake 0.5s ease;
-}
-
-.quiz-container {
-    position: relative;
-    z-index: 1;
 }
 
 .question-container {

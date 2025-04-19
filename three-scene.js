@@ -20,7 +20,10 @@ class EasterScene {
             this.camera.position.z = 5;
             
             // Setup renderer
-            this.renderer = new THREE.WebGLRenderer({ antialias: true });
+            this.renderer = new THREE.WebGLRenderer({ 
+                antialias: true,
+                alpha: true 
+            });
             this.renderer.setSize(container.clientWidth, container.clientHeight);
             this.renderer.setPixelRatio(window.devicePixelRatio);
             container.appendChild(this.renderer.domElement);
@@ -42,7 +45,7 @@ class EasterScene {
                 specular: 0x050505,
                 shininess: 100,
                 transparent: true,
-                opacity: 0.7 // Make egg slightly transparent
+                opacity: 0.9
             });
             
             this.egg = new THREE.Mesh(eggGeometry, material);
@@ -51,17 +54,9 @@ class EasterScene {
             // Create bunny
             this.createBunny();
             
-            // Add controls with disabled zoom
+            // Disable all controls
             this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
-            this.controls.enableDamping = true;
-            this.controls.dampingFactor = 0.05;
-            this.controls.enableZoom = false;
-            this.controls.minDistance = 5;
-            this.controls.maxDistance = 5;
-            this.controls.enablePan = false;
-            this.controls.rotateSpeed = 0.5;
-            this.controls.enableTouch = false; // Disable touch controls
-            this.controls.enabled = false; // Disable all controls initially
+            this.controls.enabled = false;
             
             // Initialize growth state
             this.currentGrowth = 1;

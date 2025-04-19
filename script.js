@@ -178,31 +178,17 @@ function initializeScene() {
         
         easterScene = new EasterScene(container);
         
-        // Add both click and touch event listeners to the container
-        const startQuizOnInteraction = (event) => {
-            event.preventDefault(); // Prevent default touch behavior
-            event.stopPropagation(); // Stop event bubbling
-            
-            // For touch events, only trigger on touchend
-            if (event.type === 'touchstart') {
-                return;
-            }
-            
+        // Add event listener for both click and touch
+        function handleInteraction(event) {
+            event.preventDefault();
             if (!quizStarted) {
-                console.log('Starting quiz...');
                 startQuiz();
             }
-        };
+        }
 
-        // Remove any existing event listeners
-        container.removeEventListener('click', startQuizOnInteraction);
-        container.removeEventListener('touchstart', startQuizOnInteraction);
-        container.removeEventListener('touchend', startQuizOnInteraction);
-        
         // Add event listeners
-        container.addEventListener('click', startQuizOnInteraction);
-        container.addEventListener('touchstart', startQuizOnInteraction, { passive: false });
-        container.addEventListener('touchend', startQuizOnInteraction, { passive: false });
+        container.addEventListener('click', handleInteraction);
+        container.addEventListener('touchend', handleInteraction);
         
         // Handle window resize
         window.addEventListener('resize', () => {
@@ -223,25 +209,29 @@ function startQuiz() {
     console.log('Quiz starting...');
     quizStarted = true;
     
-    // Show quiz container with fade effect
-    quizContainer.classList.remove('hidden');
-    setTimeout(() => {
-        quizContainer.classList.add('active');
-        
-        // Start the quiz
-        currentQuestion = 0;
-        score = 0;
-        correctAnswers = 0;
-        showQuestion();
-    }, 50);
+    // Show quiz container
+    quizContainer.style.display = 'block';
+    // Use requestAnimationFrame to ensure display change has taken effect
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            quizContainer.classList.add('active');
+            
+            // Start the quiz
+            currentQuestion = 0;
+            score = 0;
+            correctAnswers = 0;
+            showQuestion();
+        });
+    });
 }
 
 // Make sure DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM loaded, initializing...');
     initializeScene();
-    // Hide quiz container initially
-    quizContainer.classList.add('hidden');
+    
+    // Ensure quiz container is hidden initially
+    quizContainer.style.display = 'none';
     quizContainer.classList.remove('active');
 });
 

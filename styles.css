@@ -1,0 +1,591 @@
+body {
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(45deg, #FFB6C1, #FFC0CB); /* Light pink gradient */
+    font-family: 'Comic Sans MS', cursive;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="%23ff00ff"><path d="M12 2L2 22h20L12 2z"/></svg>'), auto;
+}
+
+.container {
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 1.5rem;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(255, 182, 193, 0.5);
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    border: 5px solid #FFB6C1;
+    animation: glow 2s infinite alternate;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+@keyframes glow {
+    from {
+        box-shadow: 0 0 10px #FFB6C1, 0 0 20px #FFC0CB;
+    }
+    to {
+        box-shadow: 0 0 20px #FFB6C1, 0 0 30px #FFC0CB;
+    }
+}
+
+.title-container {
+    margin-bottom: 2rem;
+}
+
+.title {
+    color: #FF69B4; /* Hot pink */
+    text-shadow: 2px 2px 0 #FFB6C1;
+    font-size: 3rem;
+    margin: 0;
+    transform: rotate(-5deg);
+}
+
+.title-decoration {
+    font-size: 2rem;
+    margin-top: 1rem;
+}
+
+.egg-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+    background-color: white;
+    border-radius: 15px;
+    overflow: hidden;
+    z-index: 1; /* Ensure it's above other elements */
+}
+
+#three-container {
+    position: fixed; /* Change to fixed positioning */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: transparent;
+    z-index: 1000; /* High z-index to appear above everything */
+}
+
+#three-container canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.easter-egg {
+    position: relative;
+    width: 200px;
+    height: 260px;
+    transition: all 0.5s ease;
+    transform-origin: center center;
+    z-index: 100;
+}
+
+.egg-body {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #fff5e6, #ffe0b2);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.5s ease;
+}
+
+.egg-pattern-1, .egg-pattern-2, .egg-pattern-3 {
+    position: absolute;
+    border-radius: 50%;
+    background: #FFB6C1;
+    opacity: 0.3;
+}
+
+.egg-pattern-1 {
+    width: 60px;
+    height: 60px;
+    top: 20%;
+    left: 20%;
+}
+
+.egg-pattern-2 {
+    width: 50px;
+    height: 50px;
+    top: 50%;
+    right: 20%;
+}
+
+.egg-pattern-3 {
+    width: 55px;
+    height: 55px;
+    bottom: 20%;
+    left: 30%;
+}
+
+.egg-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+.eyes {
+    position: absolute;
+    top: 35%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+.eye {
+    width: 16px;
+    height: 16px;
+    background: #333;
+    border-radius: 50%;
+    position: relative;
+}
+
+.eye::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+}
+
+.mouth {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 15px;
+    border-radius: 0 0 10px 10px;
+    border: 2px solid #333;
+    border-top: 0;
+    transition: all 0.3s ease;
+}
+
+.blush {
+    position: absolute;
+    width: 25px;
+    height: 12px;
+    background: #FFB6C1;
+    border-radius: 50%;
+    opacity: 0.5;
+    top: 45%;
+}
+
+.blush.left {
+    left: 15%;
+}
+
+.blush.right {
+    right: 15%;
+}
+
+/* Egg Animations */
+@keyframes happy-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes sad-shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* Happy Expression */
+.easter-egg.happy .mouth {
+    height: 15px;
+    border-radius: 0 0 50% 50%;
+    border-color: #333;
+    transform: translateX(-50%) scaleY(1);
+}
+
+.easter-egg.happy {
+    animation: happy-bounce 0.5s ease;
+}
+
+/* Sad Expression */
+.easter-egg.sad .mouth {
+    height: 15px;
+    border-radius: 50% 50% 0 0;
+    border-bottom: 0;
+    border-top: 2px solid #333;
+    top: 55%;
+}
+
+.easter-egg.sad {
+    animation: sad-shake 0.5s ease;
+}
+
+.quiz-container {
+    position: relative;
+    z-index: 1;
+}
+
+.question-container {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background-color: rgba(255, 182, 193, 0.2);
+    border-radius: 15px;
+    border: 2px solid #FFB6C1;
+}
+
+.question {
+    position: relative;
+    z-index: 1;
+    color: #FF69B4;
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    text-shadow: 1px 1px 0 #FFB6C1;
+}
+
+.options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.option {
+    background-color: #FFF0F5;
+    color: #FF69B4;
+    padding: 0.75rem;
+    border: 2px solid #FFB6C1;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Comic Sans MS', cursive;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.option:hover {
+    background-color: #FFB6C1;
+    color: white;
+    transform: scale(1.05);
+}
+
+.option:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.fun-fact {
+    margin: 1rem auto 0;
+    padding: 1rem;
+    background-color: #FFF0F5;
+    border: 2px solid #FFB6C1;
+    border-radius: 15px;
+    font-size: 1.1rem;
+    color: #FF69B4;
+    max-width: 90%;
+    box-shadow: 0 4px 8px rgba(255, 182, 193, 0.3);
+    transition: all 0.5s ease;
+    position: relative;
+    line-height: 1.3;
+}
+
+.fun-fact::before {
+    content: "✨ Fun Fact ✨";
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #FFF0F5;
+    padding: 0 10px;
+    color: #FF69B4;
+    font-size: 0.8rem;
+    border-radius: 10px;
+}
+
+.emoji-burst {
+    position: fixed;
+    pointer-events: none;
+    font-size: 2rem;
+    animation: burstAnimation 2s ease-out forwards;
+    z-index: 1000;
+}
+
+@keyframes burstAnimation {
+    0% {
+        transform: scale(0) rotate(0deg);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.5) rotate(180deg);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(2) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.8s ease-in forwards;
+}
+
+.fade-out {
+    animation: fadeOut 0.8s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-10px); }
+}
+
+.button {
+    background-color: #FF69B4;
+    color: white;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Comic Sans MS', cursive;
+    font-size: 1.2rem;
+    margin-top: 1rem;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.button:hover {
+    background-color: #FFB6C1;
+    border-color: #FF69B4;
+    transform: scale(1.1);
+}
+
+.hidden {
+    display: none;
+}
+
+.result {
+    color: #FF69B4;
+    font-size: 1.5rem;
+}
+
+#final-message {
+    margin: 1rem 0;
+    font-size: 1.2rem;
+    color: #FFB6C1;
+}
+
+/* Cracking animation */
+@keyframes crack {
+    0% { 
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    }
+    40% {
+        clip-path: polygon(0 0, 48% 0, 48% 100%, 0 100%);
+    }
+    60% {
+        clip-path: polygon(52% 0, 100% 0, 100% 100%, 52% 100%);
+    }
+    100% {
+        clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+    }
+}
+
+@keyframes reveal-bunny {
+    0% {
+        transform: translateY(50px) scale(0.5);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.easter-egg.cracking .egg-body {
+    animation: crack 2s forwards;
+}
+
+.bunny-reveal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 100px;
+    opacity: 0;
+    z-index: 1;
+}
+
+.bunny-reveal.show {
+    animation: reveal-bunny 1s ease-out forwards;
+    animation-delay: 1s;
+}
+
+/* Growth animation for correct answers */
+@keyframes grow {
+    0% { 
+        transform: scale(1);
+        z-index: 100;
+    }
+    50% { 
+        transform: scale(1.5);
+        z-index: 100;
+    }
+    100% { 
+        transform: scale(1);
+        z-index: 100;
+    }
+}
+
+/* Make permanent growth with each correct answer */
+.easter-egg.size-1 {
+    transform: scale(1.2);
+}
+
+.easter-egg.size-2 {
+    transform: scale(1.4);
+}
+
+.easter-egg.size-3 {
+    transform: scale(1.6);
+}
+
+.easter-egg.size-4 {
+    transform: scale(1.8);
+}
+
+.easter-egg.size-5 {
+    transform: scale(2);
+}
+
+.easter-egg.correct {
+    animation: grow 0.8s ease-out;
+}
+
+/* Ensure the egg stays on top */
+.easter-egg, .easter-egg * {
+    z-index: 100;
+}
+
+/* Celebration effects */
+@keyframes celebrate {
+    0% { transform: rotate(-5deg); }
+    25% { transform: rotate(5deg); }
+    50% { transform: rotate(-5deg); }
+    75% { transform: rotate(5deg); }
+    100% { transform: rotate(0deg); }
+}
+
+.celebrating {
+    animation: celebrate 0.5s ease-in-out;
+}
+
+/* Add a class to hide content when egg is large */
+.content-hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Egg Hatching Animation */
+.egg-crack {
+    position: absolute;
+    background: white;
+    width: 4px;
+    height: 0;
+    transform-origin: top;
+    z-index: 3;
+}
+
+.egg-crack.left {
+    left: 40%;
+    top: 20%;
+    transform: rotate(-25deg);
+}
+
+.egg-crack.right {
+    right: 40%;
+    top: 20%;
+    transform: rotate(25deg);
+}
+
+.egg-piece {
+    position: absolute;
+    background: linear-gradient(135deg, #fff5e6, #ffe0b2);
+    border: 2px solid #FFB6C1;
+    z-index: 2;
+    opacity: 1;
+    transition: all 0.5s ease;
+}
+
+.egg-piece.left {
+    width: 50%;
+    height: 100%;
+    left: 0;
+    border-radius: 50% 0 0 50% / 60% 0 0 40%;
+    transform-origin: right;
+}
+
+.egg-piece.right {
+    width: 50%;
+    height: 100%;
+    right: 0;
+    border-radius: 0 50% 50% 0 / 0 60% 40% 0;
+    transform-origin: left;
+}
+
+@keyframes crack-grow {
+    0% { height: 0; }
+    100% { height: 60%; }
+}
+
+@keyframes piece-left {
+    0% { transform: translateX(0) rotate(0); }
+    100% { transform: translateX(-50px) rotate(-30deg); opacity: 0; }
+}
+
+@keyframes piece-right {
+    0% { transform: translateX(0) rotate(0); }
+    100% { transform: translateX(50px) rotate(30deg); opacity: 0; }
+}
+
+.hatching .egg-crack {
+    animation: crack-grow 0.5s ease-in forwards;
+}
+
+.hatching .egg-piece.left {
+    animation: piece-left 0.8s ease-in 0.5s forwards;
+}
+
+.hatching .egg-piece.right {
+    animation: piece-right 0.8s ease-in 0.5s forwards;
+}
+
+.bunny-reveal {
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.5s ease;
+}
+
+.hatching .bunny-reveal {
+    opacity: 1;
+    transform: scale(1);
+    transition-delay: 1s;
+} 

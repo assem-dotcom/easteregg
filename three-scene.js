@@ -20,16 +20,13 @@ class EasterScene {
             this.camera.position.z = 5;
             
             // Setup renderer
-            this.renderer = new THREE.WebGLRenderer({ 
-                antialias: true,
-                alpha: true 
-            });
+            this.renderer = new THREE.WebGLRenderer({ antialias: true });
             this.renderer.setSize(container.clientWidth, container.clientHeight);
             this.renderer.setPixelRatio(window.devicePixelRatio);
             container.appendChild(this.renderer.domElement);
             
             // Add lights
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
             this.scene.add(ambientLight);
             
             const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
@@ -45,7 +42,7 @@ class EasterScene {
                 specular: 0x050505,
                 shininess: 100,
                 transparent: true,
-                opacity: 0.9
+                opacity: 0.7 // Make egg slightly transparent
             });
             
             this.egg = new THREE.Mesh(eggGeometry, material);
@@ -54,21 +51,18 @@ class EasterScene {
             // Create bunny
             this.createBunny();
             
-            // Disable all controls
+            // Add controls with disabled zoom
             this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
-            this.controls.enabled = false;
+            this.controls.enableDamping = true;
+            this.controls.dampingFactor = 0.05;
+            this.controls.enableZoom = false;
+            this.controls.minDistance = 5;
+            this.controls.maxDistance = 5;
             
             // Initialize growth state
             this.currentGrowth = 1;
-            this.maxGrowth = 3.0;
+            this.maxGrowth = 3.0; // Reduced max growth for better readability
             this.growthStep = (this.maxGrowth - 1) / 5;
-            
-            // Add gentle floating animation
-            this.floatAnimation = {
-                time: 0,
-                speed: 0.002,
-                amplitude: 0.1
-            };
             
             // Start animation
             this.animate();
@@ -161,16 +155,24 @@ class EasterScene {
     }
     
     animate() {
-        requestAnimationFrame(() => this.animate());
-        
-        // Add gentle floating motion
-        if (this.egg) {
-            this.floatAnimation.time += this.floatAnimation.speed;
-            this.egg.position.y = Math.sin(this.floatAnimation.time) * this.floatAnimation.amplitude;
-            this.egg.rotation.y += 0.005;
+        try {
+            requestAnimationFrame(() => this.animate());
+            
+            // Rotate egg
+            if (this.egg) {
+                this.egg.rotation.y += 0.005;
+            }
+            
+            // Rotate bunny if visible
+            if (this.bunny && this.bunny.visible) {
+                this.bunny.rotation.y += 0.01;
+            }
+            
+            this.controls.update();
+            this.renderer.render(this.scene, this.camera);
+        } catch (error) {
+            console.error('Error in animation loop:', error);
         }
-        
-        this.renderer.render(this.scene, this.camera);
     }
     
     celebrate() {

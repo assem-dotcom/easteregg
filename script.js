@@ -65,7 +65,6 @@ let currentQuestion = 0;
 let score = 0;
 let correctAnswers = 0;  // Track number of correct answers for egg growth
 let easterScene;
-let quizStarted = false;
 
 const questionElement = document.getElementById('question');
 const optionsElement = document.getElementById('options');
@@ -76,8 +75,9 @@ const finalMessageElement = document.getElementById('final-message');
 const restartButton = document.getElementById('restart');
 const funFactElement = document.getElementById('fun-fact');
 const easterEgg = document.querySelector('.easter-egg');
-const container = document.querySelector('.container');
-const quizContainer = document.getElementById('quiz-container');
+
+// Add at the top with other constants
+const lowScoreResponses = JSON.parse(localStorage.getItem('lowScoreResponses') || '[]');
 
 function createEmojiBurst(emoji, x, y) {
     const emojiElement = document.createElement('div');
@@ -178,25 +178,6 @@ function initializeScene() {
         
         easterScene = new EasterScene(container);
         
-        // Add event listener for both click and touch
-        function handleInteraction(event) {
-            console.log('Interaction detected:', event.type);
-            event.preventDefault();
-            if (!quizStarted) {
-                console.log('Starting quiz...');
-                startQuiz();
-            }
-        }
-
-        // Add event listeners with proper touch support
-        container.addEventListener('click', handleInteraction, { passive: false });
-        container.addEventListener('touchstart', handleInteraction, { passive: false });
-        container.addEventListener('touchend', handleInteraction, { passive: false });
-        
-        // Make sure the container is interactive
-        container.style.pointerEvents = 'auto';
-        container.style.touchAction = 'none';
-        
         // Handle window resize
         window.addEventListener('resize', () => {
             if (easterScene) {
@@ -210,36 +191,38 @@ function initializeScene() {
     }
 }
 
+// Add new function to start the quiz
 function startQuiz() {
-    if (quizStarted) return;
-    
-    console.log('Quiz starting...');
-    quizStarted = true;
-    
-    // Show quiz container
-    quizContainer.style.display = 'block';
-    // Use requestAnimationFrame to ensure display change has taken effect
-    requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-            quizContainer.classList.add('active');
-            
-            // Start the quiz
-            currentQuestion = 0;
-            score = 0;
-            correctAnswers = 0;
-            showQuestion();
-        });
-    });
+    document.getElementById('start-screen').classList.add('hidden');
+    document.getElementById('quiz-container').classList.remove('hidden');
+    showQuestion();
 }
 
 // Make sure DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM loaded, initializing...');
     initializeScene();
+    startHatching();
     
-    // Ensure quiz container is hidden initially
+    // Make sure quiz container is hidden and start screen is visible
+    const quizContainer = document.getElementById('quiz-container');
+    const startScreen = document.getElementById('start-screen');
+    
     quizContainer.style.display = 'none';
-    quizContainer.classList.remove('active');
+    startScreen.style.display = 'flex';
+    
+    // Add start button event listener
+    document.getElementById('start-button').addEventListener('click', () => {
+        // Add fade-out animation to start screen
+        startScreen.style.animation = 'fadeOut 0.5s ease-out forwards';
+        
+        // Start the quiz after fade-out
+        setTimeout(() => {
+            startScreen.style.display = 'none';
+            quizContainer.style.display = 'block';
+            quizContainer.style.animation = 'fadeIn 0.5s ease-in forwards';
+            showQuestion();
+        }, 500);
+    });
 });
 
 function showQuestion() {
@@ -325,24 +308,93 @@ function showResult() {
         message = "Great job! You know quite a bit about German Easter traditions! 🌸";
         updateEggExpression(true);
     } else {
-        message = "Keep learning about German Easter traditions! They're fascinating! 🌟";
+        // For low scores (0-2), show uncomfortable follow-up
+        if (score <= 2) {
+            const timestamp = new Date().toISOString();
+            const response = { score, timestamp };
+            lowScoreResponses.push(response);
+            localStorage.setItem('lowScoreResponses', JSON.stringify(lowScoreResponses));
+            
+            message = `Oh... only ${score} out of ${questions.length}? That's... interesting. 🤨`;
+            
+            // Add uncomfortable follow-up container
+            const followUpContainer = document.createElement('div');
+            followUpContainer.className = 'follow-up-container';
+            followUpContainer.innerHTML = `
+                <p class="uncomfortable-text">Would you like to explain why you performed so... poorly? 📝</p>
+                <textarea id="explanation" placeholder="Please explain your performance..." rows="3"></textarea>
+                <div class="response-stats">
+                    <p>You're the <strong>${lowScoreResponses.length}th person</strong> to score this low... 📊</p>
+                    <p class="typing-time">Time spent explaining: <span id="typing-time">0</span> seconds</p>
+                </div>
+                <button id="submit-explanation" class="button">Submit Explanation</button>
+            `;
+            
+            finalMessageElement.appendChild(followUpContainer);
+            
+            // Add typing time counter
+            const textarea = followUpContainer.querySelector('#explanation');
+            const typingTimeSpan = followUpContainer.querySelector('#typing-time');
+            let startTypingTime = null;
+            let typingInterval;
+            
+            textarea.addEventListener('focus', () => {
+                if (!startTypingTime) {
+                    startTypingTime = new Date();
+                    typingInterval = setInterval(() => {
+                        const seconds = Math.round((new Date() - startTypingTime) / 1000);
+                        typingTimeSpan.textContent = seconds;
+                        // Make it more uncomfortable after 30 seconds
+                        if (seconds > 30) {
+                            typingTimeSpan.style.color = 'red';
+                            textarea.style.backgroundColor = '#fff0f0';
+                        }
+                    }, 1000);
+                }
+            });
+            
+            // Handle explanation submission
+            const submitButton = followUpContainer.querySelector('#submit-explanation');
+            submitButton.addEventListener('click', () => {
+                const explanation = textarea.value.trim();
+                if (explanation) {
+                    response.explanation = explanation;
+                    response.typingTime = parseInt(typingTimeSpan.textContent);
+                    localStorage.setItem('lowScoreResponses', JSON.stringify(lowScoreResponses));
+                    
+                    // Show a final uncomfortable message
+                    followUpContainer.innerHTML = `
+                        <p class="final-message">Thank you for your... candid response. We'll keep it for our records. 🗄️</p>
+                        <p class="stats-message">You spent ${response.typingTime} seconds explaining yourself. That's... thorough. 🤔</p>
+                    `;
+                } else {
+                    textarea.style.borderColor = 'red';
+                    textarea.placeholder = "We really need your explanation...";
+                }
+            });
+        } else {
+            message = "Keep learning about German Easter traditions! They're fascinating! 🌟";
+        }
         updateEggExpression(false);
     }
     
-    finalMessageElement.textContent = message;
+    if (typeof message === 'string') {
+        finalMessageElement.textContent = message;
+    }
 }
 
+// Modify restart button to show start screen
 restartButton.addEventListener('click', () => {
     currentQuestion = 0;
     score = 0;
     correctAnswers = 0;  // Reset correct answers counter
     resultElement.classList.add('hidden');
-    questionElement.parentElement.classList.remove('hidden');
+    document.getElementById('start-screen').classList.remove('hidden');
+    document.getElementById('start-screen').style.animation = 'fadeIn 0.5s ease-in forwards';
     // Remove all size classes when restarting
     for (let i = 1; i <= 5; i++) {
         easterEgg.classList.remove(`size-${i}`);
     }
-    showQuestion();
 });
 
 function startHatching() {

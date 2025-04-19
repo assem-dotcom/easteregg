@@ -23,17 +23,6 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    position: relative;
-}
-
-.container.quiz-active {
-    opacity: 1;
-    pointer-events: all;
-}
-
-.container.quiz-inactive {
-    opacity: 0;
-    pointer-events: none;
 }
 
 @keyframes glow {
@@ -66,45 +55,29 @@ body {
     position: relative;
     height: 300px;
     width: 100%;
-    background-color: transparent;
+    background-color: white;
     border-radius: 15px;
-    overflow: visible;
-    margin-bottom: 20px;
-}
-
-.quiz-container {
-    position: relative;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: all 0.5s ease;
-    pointer-events: none;
-    width: 100%;
-}
-
-.quiz-container.active {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: all;
+    overflow: hidden;
+    z-index: 1; /* Ensure it's above other elements */
 }
 
 #three-container {
-    position: fixed;
+    position: fixed; /* Change to fixed positioning */
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
     background-color: transparent;
-    z-index: 9999;
-    cursor: pointer;
-    touch-action: none;
-    -webkit-tap-highlight-color: transparent;
+    z-index: 1000; /* High z-index to appear above everything */
 }
 
 #three-container canvas {
     display: block;
     width: 100% !important;
     height: 100% !important;
-    touch-action: none;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 .easter-egg {
@@ -256,6 +229,11 @@ body {
 
 .easter-egg.sad {
     animation: sad-shake 0.5s ease;
+}
+
+.quiz-container {
+    position: relative;
+    z-index: 1;
 }
 
 .question-container {
@@ -640,27 +618,176 @@ body {
     }
 }
 
-/* Add specific mobile styles */
-@media (max-width: 768px) {
-    .container {
-        width: 95%;
-        padding: 1rem;
-        margin: 1rem;
-    }
+/* Uncomfortable Follow-up Styles */
+.follow-up-container {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background-color: rgba(255, 240, 245, 0.95);
+    border: 2px solid #FFB6C1;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+}
 
-    #three-container {
-        height: 250px;
+.uncomfortable-text {
+    color: #FF1493;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    font-style: italic;
+}
+
+#explanation {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #FFB6C1;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 1rem;
+    resize: vertical;
+    transition: all 0.3s ease;
+    background-color: white;
+}
+
+#explanation:focus {
+    border-color: #FF1493;
+    box-shadow: 0 0 10px rgba(255, 20, 147, 0.2);
+    outline: none;
+}
+
+.response-stats {
+    margin: 1rem 0;
+    font-size: 0.9rem;
+    color: #FF69B4;
+}
+
+.typing-time {
+    margin-top: 0.5rem;
+    font-style: italic;
+}
+
+#typing-time {
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.final-message {
+    color: #FF1493;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    font-style: italic;
+}
+
+.stats-message {
+    color: #FF69B4;
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+@keyframes uncomfortable-pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+.follow-up-container:hover {
+    animation: uncomfortable-pulse 2s infinite;
+}
+
+/* Mobile adjustments for uncomfortable follow-up */
+@media screen and (max-width: 480px) {
+    .follow-up-container {
+        padding: 1rem;
+        margin-top: 1.5rem;
     }
     
-    .egg-container {
-        height: 250px;
+    .uncomfortable-text {
+        font-size: 1rem;
     }
     
-    .quiz-container {
-        margin-top: 65vh;
+    #explanation {
+        padding: 0.8rem;
     }
     
-    .quiz-container.active {
-        margin-top: 0;
+    .response-stats {
+        font-size: 0.8rem;
+    }
+}
+
+/* Start Screen Styles */
+.start-screen {
+    text-align: center;
+    padding: 2rem;
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.title {
+    color: #FF69B4;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 0 #FFB6C1;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.quiz-description {
+    color: #FF69B4;
+    font-size: 1.2rem;
+    line-height: 1.6;
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background-color: rgba(255, 240, 245, 0.8);
+    border-radius: 15px;
+    border: 2px dashed #FFB6C1;
+    max-width: 80%;
+}
+
+.start-button {
+    font-size: 1.3rem;
+    padding: 1.2rem 2.4rem;
+    background-color: #FF69B4;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
+    animation: pulse 2s infinite;
+    margin-top: 1rem;
+    z-index: 1000;
+}
+
+/* Make sure quiz container is hidden by default */
+.quiz-container {
+    display: none;
+}
+
+.quiz-container.visible {
+    display: block;
+}
+
+/* Mobile adjustments for start screen */
+@media screen and (max-width: 480px) {
+    .start-screen {
+        padding: 1rem;
+    }
+    
+    .quiz-description {
+        font-size: 1rem;
+        padding: 0.8rem;
+        margin: 1rem 0;
+    }
+    
+    .start-button {
+        font-size: 1.1rem;
+        padding: 1rem 2rem;
     }
 } 

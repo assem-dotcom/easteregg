@@ -314,7 +314,7 @@ function selectAnswer(index, event) {
             playSound('completeSound'); // Play completion sound
             showResult();
         }
-    }, 4000);
+    }, 8000);
 }
 
 function showResult() {

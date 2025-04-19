@@ -168,21 +168,6 @@ function crackEggRevealBunny() {
     }, 2000);
 }
 
-function startQuiz() {
-    if (quizStarted) return;
-    quizStarted = true;
-    
-    // Show quiz container with fade effect
-    quizContainer.classList.remove('hidden');
-    quizContainer.classList.add('active');
-    
-    // Start the quiz
-    currentQuestion = 0;
-    score = 0;
-    correctAnswers = 0;
-    showQuestion();
-}
-
 function initializeScene() {
     try {
         const container = document.getElementById('three-container');
@@ -196,15 +181,26 @@ function initializeScene() {
         // Add both click and touch event listeners to the container
         const startQuizOnInteraction = (event) => {
             event.preventDefault(); // Prevent default touch behavior
+            event.stopPropagation(); // Stop event bubbling
+            
+            // For touch events, only trigger on touchend
+            if (event.type === 'touchstart') {
+                return;
+            }
+            
             if (!quizStarted) {
+                console.log('Starting quiz...');
                 startQuiz();
             }
         };
 
-        // Add mouse click event
-        container.addEventListener('click', startQuizOnInteraction);
+        // Remove any existing event listeners
+        container.removeEventListener('click', startQuizOnInteraction);
+        container.removeEventListener('touchstart', startQuizOnInteraction);
+        container.removeEventListener('touchend', startQuizOnInteraction);
         
-        // Add touch events
+        // Add event listeners
+        container.addEventListener('click', startQuizOnInteraction);
         container.addEventListener('touchstart', startQuizOnInteraction, { passive: false });
         container.addEventListener('touchend', startQuizOnInteraction, { passive: false });
         
@@ -221,11 +217,32 @@ function initializeScene() {
     }
 }
 
+function startQuiz() {
+    if (quizStarted) return;
+    
+    console.log('Quiz starting...');
+    quizStarted = true;
+    
+    // Show quiz container with fade effect
+    quizContainer.classList.remove('hidden');
+    setTimeout(() => {
+        quizContainer.classList.add('active');
+        
+        // Start the quiz
+        currentQuestion = 0;
+        score = 0;
+        correctAnswers = 0;
+        showQuestion();
+    }, 50);
+}
+
 // Make sure DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM loaded, initializing...');
     initializeScene();
-    // Hide quiz container initially but show the container itself
+    // Hide quiz container initially
     quizContainer.classList.add('hidden');
+    quizContainer.classList.remove('active');
 });
 
 function showQuestion() {
